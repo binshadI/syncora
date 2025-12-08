@@ -45,6 +45,25 @@ const register = asyncHandler(async (req, res) => {
 
 //login.....
 const login = asyncHandler (async(req,res)=>{
+
+    const {email, password} = req.body;
+
+    const user = await User.findOne({email})
+    console.log(user.password)
+
+    if(!user){
+        res.status(401);
+        throw new Error("no such email or password");
+    }
+    const isMatch = await bcrypt.compare(password,user.password);
+
+    if(!isMatch){
+        res.status(401);
+        throw new Error("no such email or password");
+    }
+    res.json({
+        msg : "done"
+    })
     
 })
 
