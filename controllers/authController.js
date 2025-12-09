@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator");
 const User = require('../models/userModel');
+const jwt = require("jsonwebtoken");
 
 //accout creation.....
 
@@ -47,9 +48,9 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler (async(req,res)=>{
 
     const {email, password} = req.body;
-
+    
+    
     const user = await User.findOne({email})
-    console.log(user.password)
 
     if(!user){
         res.status(401);
@@ -61,9 +62,21 @@ const login = asyncHandler (async(req,res)=>{
         res.status(401);
         throw new Error("no such email or password");
     }
-    res.json({
-        msg : "done"
+
+    //jwt 
+
+    const accessToken = jwt.sign(
+        {
+        id:user.id
+    },process.env.JWTTOCKEN,
+    {
+        expiresIn : "10m"
     })
+
+    res.json({
+        accessToken
+    });
+
     
 })
 
