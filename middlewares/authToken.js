@@ -8,7 +8,7 @@ const authenticateToken = (req, res, next) => {
     if (token == null) {
         return res.status(401)
     }
-    jwt.verify(token, process.env.JWTTOCKEN, (err, decodedUser) => {
+    jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decodedUser) => {
         if (err) {
             return res.status(403).json({
                 msg: "invalid or expired token"
