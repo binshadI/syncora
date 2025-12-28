@@ -6,6 +6,10 @@ const User = require('../models/userModel');
 const refreshTokenModel = require("../models/refreshTokenModel");
 const jwt = require("jsonwebtoken");
 const { generateaccestoken, generaterefreshtoken } = require("../utlis/jwt");
+//otp
+const otpservice = require('../services/otp.services')
+const { sendOtp } = require("../utlis/sendOtp.js");
+const otpStore = require("../store/otpStore");
 
 //accout creation.....
 
@@ -36,15 +40,39 @@ const register = asyncHandler(async (req, res) => {
         email,
         password: hashedpassword
     });
-    if (user) {
-        res.status(201).json({
-            msg: "user created.."
-        })
-    } else {
+    if (!user) {
         res.status(400)
         throw new Error("user data is not valid");
     }
+    //send otp 
+    try {
+
+        const otp = Math.floor(1000 + Math.random() * 9000);
+        otpservice.saveOtp(email, otp);
+        await sendOtp(email, otp)
+        return res.json({ msg: "user created and otp sended" })
+    } catch (e) {
+        return res.status(500).json({ msg: e.message });
+    }
 });
+
+//verify otp 
+
+const verifyOtpcontroller = async (req, res) => {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+        res.status(400).json({
+            msg: "email and otp required"
+        })
+    }
+    await otpservice.verifyOtp(email, otp);
+
+    return res.status(200).json({
+        msg: "otp verified"
+    })
+}
+
+
 
 //login.....
 const login = asyncHandler(async (req, res) => {
@@ -73,8 +101,8 @@ const login = asyncHandler(async (req, res) => {
     const refreshToken = generaterefreshtoken(user.id);
 
     await refreshTokenModel.create({
-        token:refreshToken,
-        user : user.id,
+        token: refreshToken,
+        user: user.id,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) //7 days
     })
 
@@ -107,20 +135,20 @@ const checkToken = asyncHandler(async (req, res) => {
             }
 
             const storedToken = await refreshTokenModel.findOne({
-                token : refreshToken,
-                isRevoked : false,
-                expiresAt : {$gt:new Date()}
+                token: refreshToken,
+                isRevoked: false,
+                expiresAt: { $gt: new Date() }
             })
 
-            if(!storedToken){
+            if (!storedToken) {
                 res.status(403).json({
-                    msg : "refresh token not registerd"
+                    msg: "refresh token not registerd"
                 })
             }
 
-            if(storedToken.user.toString() !== decodedUser.userid){
+            if (storedToken.user.toString() !== decodedUser.userid) {
                 return res.status(403).json({
-                    msg : "token mismatch"
+                    msg: "token mismatch"
                 })
             }
 
@@ -132,14 +160,14 @@ const checkToken = asyncHandler(async (req, res) => {
             const newrefreshtoken = generateaccestoken(decodedUser.userid);
 
             await refreshTokenModel.create({
-                token : newrefreshtoken,
-                user : decodedUser.userid,
-                expiresAt : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                token: newrefreshtoken,
+                user: decodedUser.userid,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             });
 
             res.json({
-                newaccessToken : newaccestoken,
-                newrefreshtoken : newrefreshtoken
+                newaccessToken: newaccestoken,
+                newrefreshtoken: newrefreshtoken
             })
 
 
@@ -151,5 +179,6 @@ const checkToken = asyncHandler(async (req, res) => {
 module.exports = {
     register,
     login,
+    verifyOtpcontroller,
     checkToken
 }

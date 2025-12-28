@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { register,login,checkToken } = require('../controllers/authController')
+const { register,login,verifyOtpcontroller,checkToken } = require('../controllers/authController')
 const { registerValidation } = require("../middlewares/validation")
 const { authenticateToken } = require("../middlewares/authToken");
 
@@ -13,6 +13,8 @@ router.post('/register',registerValidation,register);
 router.post("/login",login);
 
 router.post("/token",checkToken);
+
+router.post("/verifyotp",verifyOtpcontroller)
 
 
 module.exports = router
