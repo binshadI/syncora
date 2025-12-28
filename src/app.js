@@ -10,6 +10,7 @@ connectDb();
 
 
 app.use('/auth',auth);
+
 app.use('/',user);
 
 
