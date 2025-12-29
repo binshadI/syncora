@@ -5,6 +5,7 @@ const auth = require("../routes/authRoutes");
 const user = require("../routes/userRoutes");
 
 app.use(express.json());
+
 //database connection
 connectDb();
 
