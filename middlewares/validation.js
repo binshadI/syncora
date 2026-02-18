@@ -20,5 +20,16 @@ const registerValidation = [
         .withMessage("password must contain capital-letter,numbers,and symbols")
     ]
 
+const loignValidation =[
+    check('email')
+        .notEmpty()
+        .withMessage("email can't be empty")
+        .isEmail()
+        .withMessage("Enter a valid Email"),
+        //password
+        check('password')
+        .notEmpty()
+        .withMessage("password can't be empty")
+];
 
-module.exports = {registerValidation}
+module.exports = {registerValidation,loignValidation}

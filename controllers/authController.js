@@ -15,19 +15,22 @@ const otpStore = require("../store/otpStore");
 
 const register = asyncHandler(async (req, res) => {
 
+    console.log("register page workingn...");
+
     const { username, email, password } = req.body;
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json({ message: errors.array()[0].msg });
     }
 
     const userAvailable = await User.findOne({ email });
 
     if (userAvailable) {
-        res.status(400);
-        throw new Error("user already exist")
+       return res.status(400).json({
+        message : "user already exist"
+       });
     }
 
     //hashed password......!!
@@ -40,9 +43,14 @@ const register = asyncHandler(async (req, res) => {
         email,
         password: hashedpassword
     });
+
+    
     if (!user) {
-        res.status(400)
-        throw new Error("user data is not valid");
+        return res.status(400).json(
+            {
+                message:"user data is not valid"
+            }
+        );
     }
     //send otp 
     try {
@@ -50,9 +58,11 @@ const register = asyncHandler(async (req, res) => {
         const otp = Math.floor(1000 + Math.random() * 9000);
         otpservice.saveOtp(email, otp);
         await sendOtp(email, otp)
-        return res.json({ msg: "user created and otp sended" })
+        return res.status(201).json(
+            { message: "user created and otp sended" }
+        )
     } catch (e) {
-        return res.status(500).json({ msg: e.message });
+        return res.status(500).json({ message: e.message });
     }
 });
 
@@ -61,14 +71,14 @@ const register = asyncHandler(async (req, res) => {
 const verifyOtpcontroller = async (req, res) => {
     const { email, otp } = req.body;
     if (!email || !otp) {
-        res.status(400).json({
-            msg: "email and otp required"
+       return res.status(400).json({
+            message: "email and otp required"
         })
     }
     await otpservice.verifyOtp(email, otp);
 
     return res.status(200).json({
-        msg: "otp verified"
+        message: "otp verified"
     })
 }
 
@@ -77,22 +87,36 @@ const verifyOtpcontroller = async (req, res) => {
 //login.....
 const login = asyncHandler(async (req, res) => {
 
+    console.log("working..");
     const { email, password } = req.body;
+    
+    const errors = validationResult(req);
 
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ message: errors.array()[0].msg });
+    }
 
     const user = await User.findOne({ email })
 
 
     if (!user) {
-        res.status(401);
-        throw new Error("no such email or password");
+        return res.status(401).json(
+            {
+                message:"no such email or password"
+            }
+        );
     }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        res.status(401);
-        throw new Error("no such email or password");
+      return res.status(401).json(
+            {
+                message:"no such email or password"
+            }
+        );
     }
+
+
 
     //jwt accesstoken
     const accessToken = generateaccestoken(user._id);
@@ -114,14 +138,14 @@ const login = asyncHandler(async (req, res) => {
 
 })
 
-
+//generating new access token 
 const checkToken = asyncHandler(async (req, res) => {
 
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
         return res.status(401).json({
-            msg: "refresh token required."
+            message: "refresh token required."
         });
     }
 
@@ -130,7 +154,7 @@ const checkToken = asyncHandler(async (req, res) => {
         async (err, decodedUser) => {
             if (err) {
                 return res.status(403).json({
-                    msg: "invalid or expired token"
+                    message: "invalid or expired token"
                 })
             }
 
@@ -142,13 +166,13 @@ const checkToken = asyncHandler(async (req, res) => {
 
             if (!storedToken) {
                 res.status(403).json({
-                    msg: "refresh token not registerd"
+                    message: "refresh token not registerd"
                 })
             }
 
             if (storedToken.user.toString() !== decodedUser.userid) {
                 return res.status(403).json({
-                    msg: "token mismatch"
+                    message: "token mismatch"
                 })
             }
 
