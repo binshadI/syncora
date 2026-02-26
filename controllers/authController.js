@@ -69,6 +69,9 @@ const register = asyncHandler(async (req, res) => {
 //verify otp 
 
 const verifyOtpcontroller = async (req, res) => {
+    
+    console.log("verification is working...");
+    
     const { email, otp } = req.body;
     if (!email || !otp) {
        return res.status(400).json({
@@ -116,6 +119,13 @@ const login = asyncHandler(async (req, res) => {
         );
     }
 
+    if(!user.verified){
+        return res.status(401).json(
+            {
+                message:"this account is not verified"
+            }
+        )
+    }
 
 
     //jwt accesstoken

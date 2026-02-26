@@ -20,6 +20,15 @@ const userSchema = mongoose.Schema({
         enum : ['user','admin'],
         default : 'user'
     },
+    contact : [
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'user'
+        }
+    ],
+    friendsRequest : {
+        
+    },
     verified : {
         type : Boolean,
         default : false
