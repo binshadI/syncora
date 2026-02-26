@@ -4,18 +4,18 @@ const friendsRequestSchema = mongoose.Schema({
     from:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'user',
-        require:true
+        required:true
     },
     to:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'user',
-        require:true
+        required:true
     },
     status:{
         type : String,
         enum : ['pending','accepted','declined'],
         default : 'pending',
-        require:true
+        required:true
     }
 },{timestamp : true});
 
