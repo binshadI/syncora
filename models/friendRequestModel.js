@@ -1,0 +1,26 @@
+const mongoose = require("mongoose");
+
+const friendsRequestSchema = mongoose.Schema({
+    from:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'user',
+        require:true
+    },
+    to:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'user',
+        require:true
+    },
+    status:{
+        type : String,
+        enum : ['pending','accepted','declined'],
+        default : 'pending',
+        require:true
+    }
+},{timestamp : true});
+
+friendsRequestSchema.index({from:1,to:1},{unique : true});
+
+module.exports = mongoose.model( 
+    "friendReques",friendsRequestSchema
+);
