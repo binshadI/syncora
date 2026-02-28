@@ -26,9 +26,6 @@ const userSchema = mongoose.Schema({
             ref:'user'
         }
     ],
-    friendsRequest : {
-        
-    },
     verified : {
         type : Boolean,
         default : false

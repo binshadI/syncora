@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const friendsRequestSchema = mongoose.Schema({
     from:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
+        ref:'User',
         required:true
     },
     to:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
+        ref:'User',
         required:true
     },
     status:{
@@ -22,5 +22,5 @@ const friendsRequestSchema = mongoose.Schema({
 friendsRequestSchema.index({from:1,to:1},{unique : true});
 
 module.exports = mongoose.model( 
-    "friendReques",friendsRequestSchema
+    "friendRequest",friendsRequestSchema
 );

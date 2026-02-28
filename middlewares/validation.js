@@ -22,6 +22,7 @@ const registerValidation = [
 
 const loignValidation =[
     check('email')
+        .isEmail()
         .notEmpty()
         .withMessage("email can't be empty")
         .isEmail()
@@ -31,5 +32,6 @@ const loignValidation =[
         .notEmpty()
         .withMessage("password can't be empty")
 ];
+
 
 module.exports = {registerValidation,loignValidation}
