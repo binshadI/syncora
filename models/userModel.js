@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
     contact : [
         {
             type:mongoose.Schema.Types.ObjectId,
-            ref:'user'
+            ref:'User'
         }
     ],
     verified : {
