@@ -175,7 +175,7 @@ const checkToken = asyncHandler(async (req, res) => {
             })
 
             if (!storedToken) {
-                res.status(403).json({
+                return  res.status(403).json({
                     message: "refresh token not registerd"
                 })
             }

@@ -7,9 +7,15 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
 const friendRequest = asyncHandler(async (req, res) => {
+
+    const user = req.user.userid;
+
+    const finduser = await User.findOne({_id : user});
+
+
     console.log("req recived..")
 
-    const { serachEmail } = req.body;
+    const { searchEmail } = req.body;
 
     const errors = validationResult(req);
 
@@ -19,7 +25,14 @@ const friendRequest = asyncHandler(async (req, res) => {
         });
     }
 
-    const serachuser = await User.findOne({ email: serachEmail });
+
+    const serachuser = await User.findOne({ email: searchEmail });
+
+    if(searchEmail === finduser.email){
+        return res.status(404).json({
+            message:"bro its you.."
+        });
+    }
 
     if (!serachuser) {
         return res.status(404).json({
@@ -38,15 +51,14 @@ const friendRequest = asyncHandler(async (req, res) => {
         to: serachuser
     },);
 
-    //testing only 
-    res.json({
-        message: "Friend request logic working",
-        sender,
-        receiver: serachuser._id,
+    return res.status(200).json({
+        message: "friend request sent successfully"
     });
-    //testingg only 
 
 });
+
+
+
 
 const inbox = asyncHandler(async (req, res) => {
 
@@ -57,8 +69,9 @@ const inbox = asyncHandler(async (req, res) => {
         status: "pending",
     })
         .populate("from", "email")
+        .select("-to -status -__v");
 
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         count: request.length,
         request
@@ -67,6 +80,7 @@ const inbox = asyncHandler(async (req, res) => {
 
 
 const status = asyncHandler(async (req, res) => {
+
 
     const requsetid = req.params.id;
 

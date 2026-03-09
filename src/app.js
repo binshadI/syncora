@@ -5,6 +5,8 @@ const auth = require("../routes/authRoutes");
 const user = require("../routes/userRoutes");
 const friendRequest = require("../routes/friendRequestRoute");
 const contactdisplay = require("../routes/contactRoutes");
+const chatRoutes = require("../routes/chatRoutes");
+
 app.use(express.json());
 
 //database connection
@@ -18,6 +20,8 @@ app.use('/',user);
 app.use('/req',friendRequest);
 
 app.use('/home',contactdisplay);
+
+app.use('/chatroom',chatRoutes);
 
 
 

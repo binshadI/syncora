@@ -1,27 +1,22 @@
+
 module.exports = function chatHandler(io, socket) {
 
-    socket.on('join_room', ({ roomId }) => {
-
-        //debuging
-        console.log("testing join_room")
-        console.log(roomId);
-        //end
-        
+    socket.on('join_room', ({ roomId }) => {   
         if (!roomId) {
-            return socket.emit("roomId required");
+            return socket.emit("error",{message : "roomId required"});
         }
         socket.join(roomId);
         console.log(`${socket.id} joined in ${roomId}`)
     })
 
-    socket.on("send_message", ({ roomId, msg }) => {
+    socket.on("send_message", ({ roomId, msg,senderId}) => {
 
-        if (!roomId || !msg) {
-            return socket.emit("roomId and message are required");
+        if (!roomId || !msg || !senderId) {
+            return socket.emit("error",{message:"roomId,message,senderId are required"});
         }
 
         io.to(roomId).emit('recive_msg', {
-            from: socket.id,
+            socketId,
             msg
         })
     })
