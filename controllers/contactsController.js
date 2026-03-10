@@ -3,12 +3,11 @@ const mongoose = require("mongoose");
 const User = require('../models/userModel');
 
 const contactdisplay = asyncHandler(async (req, res) => {
-    console.log("contact page working")
     
     const userid = req.user.userid;
 
     const user = await User.findById(userid)
-        .populate("contact","username -_id")
+        .populate("contact","username ")
         .select("contact");
 
 

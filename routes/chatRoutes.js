@@ -4,6 +4,6 @@ const router = express.Router();
 const {findroomId} = require("../controllers/chatController");
 const {authenticateToken} = require("../middlewares/authToken");
 
-router.get('/findroomId',authenticateToken,findroomId);
+router.post('/findroomId',authenticateToken,findroomId);
 
 module.exports = router;

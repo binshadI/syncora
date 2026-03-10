@@ -4,6 +4,9 @@ const friendRequestModel = require("../models/friendRequestModel");
 
 
 const findroomId = asyncHandler(async (req, res) => {
+
+    console.log("findroomid working");
+    
     const userid = req.user.userid;
     const { friendId } = req.body;
     const friendRequest = await friendRequestModel.findOne({
@@ -22,8 +25,9 @@ const findroomId = asyncHandler(async (req, res) => {
 
 
     return res.status(200).json({
-        friendreqId: roomId
-    })
+        friendreqId: roomId,
+        userId : userid
+    });
 });
 
 
