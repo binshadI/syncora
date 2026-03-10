@@ -12,6 +12,9 @@ app.use(express.json());
 //database connection
 connectDb();
 
+//testing
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/auth',auth);
 
