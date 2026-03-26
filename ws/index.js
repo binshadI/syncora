@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 const chatHandler = require("./handlers/ChatHandlers");
 const CallHandler = require("./handlers/CallHandler");
+const User = require('../models/userModel');
 
 
 const onlineUsers = {};
@@ -18,27 +19,31 @@ function initialize(server) {
     io.on('connection', (socket) => {
         console.log("user connected:", socket.id);
 
-        socket.on('register',(userId)=>{
+        socket.on('register', async(userId) => {
             onlineUsers[userId] = socket.id;
             socket.data.userId = userId;
-            console.log(`[register] userId=${userId} --> socketId=${socket.id}`);
+
+            const user = await User.findById(userId).select('username');
+            socket.data.username = user?.username ?? '';
+
+            console.log(`[register] userId=${userId} username=${socket.data.username} → socketId=${socket.id}`);
         })
 
         //chatHandlers 
-        chatHandler(io,socket);
+        chatHandler(io, socket);
 
         //callhandler
-        CallHandler(io,socket,onlineUsers);
+        CallHandler(io, socket, onlineUsers);
 
         //disconnect ======>
         socket.on('disconnect', () => {
 
             const userId = socket.data.userId;
 
-            if(userId){
+            if (userId) {
                 delete onlineUsers[userId];
                 console.log(`[offline] userId=${userId}`);
-                
+
             }
             console.log("user disconnected", socket.id);
 

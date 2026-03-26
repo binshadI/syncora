@@ -90,7 +90,7 @@ const verifyOtpcontroller = async (req, res) => {
 //login.....
 const login = asyncHandler(async (req, res) => {
 
-    console.log("working..");
+    console.log("login is working..");
     const { email, password } = req.body;
     
     const errors = validationResult(req);

@@ -11,7 +11,7 @@ const server = new http.createServer(app)
 socketServer.initialize(server);
 
 
-server.listen(PORT,()=>{
+server.listen(PORT,'0.0.0.0',()=>{
     console.log(`server is running on prot ${PORT}`);
     
 });
